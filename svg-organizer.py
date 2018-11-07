@@ -1,15 +1,16 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # This program creates a tray for storing playing cards.  The tray should be
 # cut from wood or plastic on a laser cutter.
 
 # Note that CorelDraw's SVG import feature assumes a page size of 8.5 x 11.
 
-# This program requires pysvg (http://codeboje.de/pysvg/), version 0.2.2
-# or version 0.2.2b, which can be downloaded from
-# https://pypi.python.org/pypi/pysvg
+# This program requires pysvg-py3 (http://codeboje.de/pysvg/), version
+# 0.2.2.post2, which can be downloaded from
+# https://pypi.org/project/pysvg-py3/
 
 # Copyright 2013-2018 Timur Tabi
+# Ported to Python 3 2018 Bruce Fuda
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -58,7 +59,7 @@ class SVG(object):
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.t.finish()
-        print self.t.getXML()
+        print(self.t.getXML())
 
         # Some versions of pysvg have ".Svg" and some have ".svg", so just
         # try one at a time until it works.
@@ -69,7 +70,7 @@ class SVG(object):
         self.svg.set_viewBox('0 0 %s %s' % (self.width, self.height))
 
         self.t.addTurtlePathToSVG(self.svg)
-        print 'Saving to %s (size: %umm x %umm)' % (self.filename, self.width, self.height)
+        print('Saving to %s (size: %umm x %umm)' % (self.filename, self.width, self.height))
         self.svg.save(self.filename)
 
     def r(self, before = None, after = None):
@@ -228,7 +229,7 @@ def front_and_back():
 def dividers():
     global o, a
 
-    with SVG(o.insert_depth, o.h, 'dividers.svg') as t:
+    with SVG(o.insert_depth, o.h, 'divider.svg') as t:
         t.relocate(o.m, 0)
 
         for i in range(0, o.num_slots - 1):
@@ -256,9 +257,15 @@ def dividers():
 def slots():
     global o, a
 
-    with SVG(o.w + 2 * o.m, o.h, 'slots.svg') as t:
+    with SVG(o.w + 2 * o.m, o.h, 'slot_full.svg') as t:
         t.f(o.m + o.w / 3)
+        t.r()
+        t.f(o.h / 5)
+        t.l()
         t.semicircle_r(o.w / 3, 20)
+        t.l()
+        t.f(o.h / 5)
+        t.r()
         t.f(o.m + o.w / 3)
         t.r()
 
@@ -272,6 +279,49 @@ def slots():
         t.r()
         t.f(o.h / 2)
 
+    with SVG(o.w + 2 * o.m, o.h, 'slot_inner.svg') as t:
+        t.f(o.m + o.w / 3)
+        t.r()
+        t.f(o.h / 5)
+        t.l()
+        t.semicircle_r(o.w / 3, 20)
+        t.l()
+        t.f(o.h / 5)
+        t.r()
+        t.f(o.m + o.w / 3)
+        t.r()
+
+        t.f(o.h / 2)
+        t.r()
+        t.f(o.m / 2)
+
+        t.notch_l(o.h / 2, o.w + o.m)
+
+        t.f(o.m / 2)
+        t.r()
+        t.f(o.h / 2)
+
+    with SVG(o.w + 2 * o.m, o.h, 'slot_outer.svg') as t:
+        t.f(o.m + o.w / 3)
+        t.r()
+        t.f(o.h / 5)
+        t.l()
+        t.semicircle_r(o.w / 3, 20)
+        t.l()
+        t.f(o.h / 5)
+        t.r()
+        t.f(o.m + o.w / 3)
+        t.r()
+
+        t.f(o.h / 2)
+        t.r()
+        t.f(o.m)
+
+        t.notch_l(o.h / 2, o.w + o.m / 2)
+
+        t.f(o.m / 2)
+        t.r()
+        t.f(o.h / 2)
 
 # Defaults for Dominion Victory cards
 parser = OptionParser(usage="usage: %prog [options]")
@@ -294,8 +344,10 @@ parser.add_option("-m", dest="m", help="material thickness (default=%default)",
                   type="float", default = 3)
 parser.add_option("-r", dest="r", help="number of rows (0=calculate) (default=%default)",
                   type="int", default = 0)
+parser.add_option("-n", dest="n", help="max number of slots per row (0=calculate) (default=%default)",
+                  type="int", default = 8)
 parser.add_option("-s", dest="s", help="approximate slot size (0=calculate) (default=%default)",
-                  type="int", default = 30)
+                  type="int", default = 0)
 parser.add_option('-c', dest='color', help='drawing color (default=%default)',
                   type='string', default = 'red')
 parser.add_option('-l', dest='line', help='line width (default=%default)',
@@ -306,11 +358,19 @@ parser.add_option('-l', dest='line', help='line width (default=%default)',
 # Verify options
 
 if o.h > o.bh:
-    print 'Error: divider height of %f is taller than box interior.' % o.h
+    print('Error: divider height of %f is taller than box interior.' % o.h)
     sys.exit(1)
 
 if o.r == 0 and o.w == 0:
-    print 'Error: -w and -r cannot both be zero'
+    print('Error: -w and -r cannot both be zero')
+    sys.exit(1)
+
+if o.s == 0 and o.n == 0:
+    print('Error: -n and -s cannot both be zero')
+    sys.exit(1)
+
+if o.s > 0 and o.n > 0:
+    print('Error: One of -n or -s must be calculated. If using -s, set -n 0')
     sys.exit(1)
 
 if o.r == 0:
@@ -321,36 +381,41 @@ if o.w == 0:
 
 o.insert_width = (o.w * o.r) + (o.m * (o.r + 1))
 if (o.insert_width) > o.bw:
-    print 'Error: insert width of %f exceeds specified box interior width of %f' % (o.insert_width, o.bw)
+    print('Error: insert width of %f exceeds specified box interior width of %f' % (o.insert_width, o.bw))
     sys.exit(1)
 
 # Because we always calculate the slot size, the insert as always exactly
 # as deep as the box interior.
 o.insert_depth = o.bd
 
-print 'Interior box height: %umm' % o.bh
-print 'Interior box width: %umm' % o.bw
-print 'Interior box depth: %umm' % o.bd
-print 'Material thickness: %.2fmm' % o.m
-print 'Number of rows: %u' % o.r
-print 'Row width: %umm' % o.w
+print()
+print('Interior box height: %umm' % o.bh)
+print('Interior box width: %umm' % o.bw)
+print('Interior box depth: %umm' % o.bd)
+print('Material thickness: %.2fmm' % o.m)
+print('Number of rows: %u' % o.r)
+print('Row width: %umm' % o.w)
 if o.bw > o.insert_width:
-    print 'Gap between insert and box: %.2fmm' % (o.bw - o.insert_width)
+    print('Gap between insert and box: %.2fmm' % (o.bw - o.insert_width))
 # Calculate some values
 
 # The notch height and also the spacing between the notches.  To avoid
 # rounding errors, the spacing below the bottom notch is calculated
 # separately as the remainder.
 o.notch = math.floor(o.h / 5)
-print 'Notch height: %umm' % o.notch
+print('Notch height: %umm' % o.notch)
 
 # Adjust the slot size.
 inside_depth = o.bd - (2 * o.m)
-num_slots = round((inside_depth + o.m) / (o.s + o.m))
+if o.n > 0:
+  num_slots = o.n
+else:
+  num_slots = round((inside_depth + o.m) / (o.s + o.m))
 o.s = ((inside_depth + o.m) / num_slots) - o.m
 o.num_slots = int(num_slots)
-print 'Number of slots: %umm' % o.num_slots
-print 'Adjusted slot size: %.2fmm' % o.s
+print('Number of slots: %u' % o.num_slots)
+print('Adjusted slot size: %.2fmm' % o.s)
+print()
 
 front_and_back()
 dividers()
