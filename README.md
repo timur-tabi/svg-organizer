@@ -5,17 +5,21 @@ This Python program creates SVG laser-cutter patterns for board game inserts.
 The insert holds rows of cards.  The best example would be for drafting games
 like Dominion, or CCGs/LCGs like Magic the Gathering or Lord of the Rings.
 
-Updated to use Python 3. Tested with Python 3.7.0.
+Compatible with both Python 2 and 3. Tested with Python 2.7.15 and 3.7.0.
 
 ## Installation
 After cloning/downloading the repository, install python package requirements
 using pip:
 
+`pip install -r requirements.txt --user`
+
+or with Python 3:
+
 `pip3 install -r requirements.txt --user`
 
-This will install the required version of the `pysvg-py3` package for Python 3.
+This will install the required version of the `pysvg` package for Python 2, or `pysvg-py3` for Python 3.
 
-Alternatively, download the pysvg-py3 package via [PyPI](https://pypi.org/project/pysvg-py3/)
+Alternatively, download the packages via PyPI - direct links available in the script.
 
 ## Usage
 
