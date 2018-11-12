@@ -5,9 +5,14 @@
 
 # Note that CorelDraw's SVG import feature assumes a page size of 8.5 x 11.
 
-# This program requires pysvg-py3 (http://codeboje.de/pysvg/), version
+# This program requires either:
+# Python 3: pysvg-py3 (http://codeboje.de/pysvg/), version
 # 0.2.2.post2, which can be downloaded from
 # https://pypi.org/project/pysvg-py3/
+# Python 2: pysvg (http://codeboje.de/pysvg/), version 0.2.2
+# or version 0.2.2b, which can be downloaded from
+# https://pypi.python.org/pypi/pysvg
+#
 
 # Copyright 2013-2018 Timur Tabi
 # Ported to Python 3 2018 Bruce Fuda
@@ -388,7 +393,7 @@ if (o.insert_width) > o.bw:
 # as deep as the box interior.
 o.insert_depth = o.bd
 
-print()
+print
 print('Interior box height: %umm' % o.bh)
 print('Interior box width: %umm' % o.bw)
 print('Interior box depth: %umm' % o.bd)
@@ -415,7 +420,7 @@ o.s = ((inside_depth + o.m) / num_slots) - o.m
 o.num_slots = int(num_slots)
 print('Number of slots: %u' % o.num_slots)
 print('Adjusted slot size: %.2fmm' % o.s)
-print()
+print
 
 front_and_back()
 dividers()

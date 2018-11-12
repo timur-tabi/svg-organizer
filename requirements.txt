@@ -1,1 +1,2 @@
-pysvg-py3==0.2.2.post2
+pysvg-py3==0.2.2.post2; python_version >= '3.0'
+pysvg==0.2.2b; python_version <= '2.7'
