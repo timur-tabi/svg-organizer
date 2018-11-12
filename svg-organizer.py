@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 # This program creates a tray for storing playing cards.  The tray should be
 # cut from wood or plastic on a laser cutter.
